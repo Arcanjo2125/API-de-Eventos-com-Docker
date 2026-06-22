@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Eventos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="app-header__inner">
+        <span class="app-header__eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/></svg>
+            Painel de eventos
+        </span>
+        <h1>Sistema de Controle de Eventos</h1>
+        <p>Acompanhe, organize e mantenha sob controle todos os eventos da escola em um só lugar.</p>
+    </div>
+</header>
+
+<main class="page">
+
+    <div th:if="${mensagem != null}" class="toast-alert" th:classappend="${tipoMensagem}">
+        <svg th:if="${tipoMensagem == 'success'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+        <svg th:if="${tipoMensagem == 'danger'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 8v5M12 16h0"/></svg>
+        <span th:text="${mensagem}"></span>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar__title">
+            <h2>Próximos eventos</h2>
+            <span class="toolbar__count" th:text="${#lists.size(eventos)} + ' cadastrado(s)'">0 cadastrado(s)</span>
+        </div>
+        <a href="/eventos/novo" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+            Novo evento
+        </a>
+    </div>
+
+    <section class="ticket-grid">
+
+        <div th:if="${eventos == null or #lists.isEmpty(eventos)}" class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><path stroke-dasharray="2 3" d="M12 7v10"/></svg>
+            <h3>Nenhum evento por aqui ainda</h3>
+            <p>Cadastre o primeiro evento para vê-lo aparecer como um ingresso aqui na lista.</p>
+            <a href="/eventos/novo" class="btn btn-success">Cadastrar evento</a>
+        </div>
+
+        <article class="ticket" th:each="evento : ${eventos}">
+            <div class="ticket__body">
+                <span class="ticket__id" th:text="'EVT-' + ${#numbers.formatInteger(evento.id, 4)}">EVT-0001</span>
+                <h3 class="ticket__name" th:text="${evento.nome}">Nome do evento</h3>
+                <span class="ticket__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.2"/></svg>
+                    <span th:text="${evento.local}">Local</span>
+                </span>
+                <span class="ticket__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path stroke-linecap="round" d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+                    <span th:text="${evento.data}">Data</span>
+                </span>
+            </div>
+            <div class="ticket__stub">
+                <div class="ticket__capacity">
+                    <strong th:text="${evento.capacidade}">0</strong>
+                    <span>vagas</span>
+                </div>
+                <div class="ticket__actions">
+                    <a th:href="@{/eventos/editar/{id}(id=${evento.id})}" class="btn-icon" title="Editar evento">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    </a>
+                    <a th:href="@{/eventos/excluir/{id}(id=${evento.id})}" class="btn-icon danger" title="Excluir evento"
+                       onclick="return confirm('Confirma a exclusão deste evento?')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M9 7V4.5h6V7M6 7l1 13h10l1-13"/></svg>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+    </section>
+
+</main>
+
+<footer class="app-footer">
+    Sistema de Controle de Eventos — projeto acadêmico containerizado com Docker.
+</footer>
+
+</body>
+</html>
