@@ -1,0 +1,46 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: eventos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eventosdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - eventos-db-data:/var/lib/postgresql/data
+    networks:
+      - eventos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eventosdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: eventos-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: eventosdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - eventos-network
+
+networks:
+  eventos-network:
+    driver: bridge
+
+volumes:
+  eventos-db-data:
